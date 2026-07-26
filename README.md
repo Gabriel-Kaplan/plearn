@@ -1,54 +1,52 @@
-# Plearn — Agricultural AI System for Home Growers
+Plearn — Agricultural AI System for Home Growers
+What is Plearn?
 
-*Built by Gabriel Kaplan · John Bryce AI Experts Program · 2026 · Final Project*
+Plearn is an agricultural AI system built to solve a problem that affects more people than you'd think. Most home growers across Israel and the broader Mediterranean region are making plant selection decisions based on generic internet advice that was never built for their conditions — and ending up with dead plants, wasted money, and the feeling that they just aren't good at this.
 
-## What is Plearn?
+Most plant guidance available today was designed for temperate climates, professional horticulturalists, or large-scale agriculture. It ignores the specific challenges of urban home growing in a Mediterranean climate: extreme summer heat, low humidity, limited balcony space, and the sharp seasonal variation unique to Israeli hardiness zones.
 
-Plearn is a agricultural AI system built to solve a problem that I've seen firsthand and one that affects far more people than you'd think. My brother has been trying to grow a garden in his apartment for years. Not because he doesn't care, not because he isn't trying but because every time he plants something, it either gets overwatered, underwatered, gets too much sun, or not enough. He never accounted for the daily cycle of the sun on his specific balcony, the difference in heat between summer and winter, or the fact that the plant he bought at the nursery was never designed to survive a Tel Aviv August. He's not alone in this. Millions of home growers across Israel and the broader Mediterranean region face the same problem and there is no tool built specifically for them.
+I wanted to approach this as an engineering problem. Plearn combines a trained neural network, a botanical clustering model, real-time weather integration, and anomaly detection to produce plant compatibility analyses that are specific, explainable, and live — adjusted to what is actually happening in the user's environment at the moment they ask.
 
-Most plant guidance available today was designed for temperate climates, professional horticulturalists, or large-scale agriculture. It ignores the specific challenges of urban home growing in a Mediterranean climate: extreme summer heat, low humidity, limited balcony space, and the sharp seasonal variation unique to Israeli hardiness zones. The result is that most home growers make plant selection decisions based on generic internet advice that was never built for their conditions, and they end up with dead plants, wasted money, and the feeling that they just aren't good at this.
+The system does not just match plants to users. It predicts compatibility across 936 plant varieties, surfaces non-obvious high-compatibility plants that standard advice would never surface, finds botanical substitutes when a preferred plant won't survive, and explains every score it produces. Built to be trusted, not just used.
 
-I wanted to approach this as an engineering problem. Plearn combines a trained neural network, a botanical clustering model, real-time weather integration, and anomaly detection to produce plant compatibility analyses that are specific, explainable, and live, adjusted to what is actually happening in the user's environment at the moment they ask.
+ 
 
-The system does not just match plants to users. It predicts survival probability across 936 plant varieties, surfaces non-obvious high-compatibility plants that standard advice would never surface, finds botanical substitutes when a preferred plant won't survive, and explains every score it produces. I built it to be trusted, not just used.
+The Problem
 
-## The Problem
-
-Agriculture and home growing in Israel sit at the intersection of a challenging climate a real lack of localised tooling and space. The Mediterranean climate, hot dry summers, mild winters, sharp regional variation between coastal Tel Aviv, elevated Jerusalem, the humid north, and the arid Negev, demands genuinely localised guidance. What thrives in one zone fails in another. What survives summer may not survive the transition. Generic advice does not account for any of this.
+Agriculture and home growing in Israel sit at the intersection of a challenging climate, a real lack of localised tooling, and space constraints. The Mediterranean climate — hot dry summers, mild winters, sharp regional variation between coastal Tel Aviv, elevated Jerusalem, the humid north, and the arid Negev — demands genuinely localised guidance. What thrives in one zone fails in another. Generic advice does not account for any of this.
 
 The existing solutions make it worse rather than better:
 
-- **Plant identification apps** identify what you already have, they don't help you decide what to grow
-- **Generic care apps** send watering reminders on fixed schedules regardless of temperature, season, or rainfall
-- **Search engines** return conflicting advice optimised for Northern European or North American climates
-- **Nursery staff** operate with sales incentives, inconsistent knowledge, and no real data infrastructure
+Plant identification apps identify what you already have — they don't help you decide what to grow
+Generic care apps send watering reminders on fixed schedules regardless of temperature, season, or rainfall
+Search engines return conflicting advice optimised for Northern European or North American climates
+Nursery staff operate with sales incentives, inconsistent knowledge, and no real data infrastructure
 
 The gap isn't information, it's intelligence. There is no shortage of plant data. What doesn't exist is a system that takes a specific person, in a specific location, with specific constraints, and tells them with confidence what will actually grow and why.
 
 Plearn is that system.
 
-&nbsp;
+ 
 
-## What Plearn Does Differently
+What Plearn Does Differently
+Neural network scored against your exact Israeli hardiness zone
+Real-time weather adjustment scores shift based on current temperature, rainfall, and humidity via OpenWeatherMap
+Full compatibility breakdown every score explained, nothing is a black box
+Live care requirements watering frequency, sunlight needs, care level, and growth cycle surfaced per plant via Perenual API at selection time
+Encyclopedic plant descriptions real botanical context pulled from Wikipedia for every plant in the results, loaded lazily with zero cost
+Pet, child, and family safety filters built directly into the model
+Botanical substitution engine finds the closest alternative when a plant won't work for your conditions
+Hidden gem detection surfaces plants that score unexpectedly high for your conditions but sit outside your typical zone profile — plants most people would never discover on their own
+Uncertainty-aware scoring (MC Dropout) every score ships with a confidence range, generated by running the network ~15 times with dropout left stochastically active — a tight range means a well-covered combination, a wider one flags a less common input worth a gut-check
+Per-score explainability (gradient×input attribution) every result shows the 2–3 factors that actually pushed its score up or down, computed directly from the trained network rather than a canned explanation
+Diverse set ("garden portfolio") mode the strongest plant from each of the 15 botanical clusters, so recommendations don't all bunch into one plant family
+Full plant catalogue all 936 plants browsable independent of an analysis, each with an on-demand personalised score against your saved conditions
+Locally-generated plant summaries a one-line, grounded summary of each top result generated by a local Ollama LLM from the plant's actual scored factors — no hosted API cost, no hallucinated care advice
+Downloadable PDF report a clean, branded one-click export of your ranked results, generated client-side
 
-- **Neural network scored** against your exact Israeli hardiness zone
-- **Real-time weather adjustment** scores shift based on current temperature, rainfall, and humidity via OpenWeatherMap
-- **Full compatibility breakdown** every score explained, nothing is a black box
-- **Live care requirements** watering frequency, sunlight needs, care level, and growth cycle surfaced per plant via Perenual API at selection time
-- **Encyclopedic plant descriptions** real botanical context pulled from Wikipedia for every plant in the results, loaded lazily with zero cost
-- **Pet, child, and family safety filters** built directly into the model
-- **Botanical substitution engine** finds the closest alternative when a plant won't work for your conditions
-- **Hidden gem detection** surfaces plants that score unexpectedly high for your conditions but sit outside your typical zone profile, plants most people would never discover on their own
-- **Uncertainty-aware scoring (MC Dropout)** every score ships with a confidence range, generated by running the network ~15 times with dropout left stochastically active — a tight range means a well-covered combination, a wider one flags a less common input worth a gut-check
-- **Per-score explainability (gradient×input attribution)** every result shows the 2-3 factors that actually pushed its score up or down, computed directly from the trained network rather than a canned explanation
-- **Diverse set ("garden portfolio") mode** the strongest plant from each of the 15 botanical clusters, so recommendations don't all bunch into one plant family
-- **Full plant catalogue** all 936 plants browsable independent of an analysis, each with an on-demand personalized score against your saved conditions
-- **Locally-generated plant summaries** a one-line, grounded summary of each top result generated by a local Ollama LLM from the plant's actual scored factors — no hosted API cost, no hallucinated care advice
-- **Downloadable PDF report** a clean, branded one-click export of your ranked results, generated client-side
+ 
 
-## System Architecture
-
-```
+System Architecture
 User Input (location, light, space, experience, preferences)
         ↓
 OpenWeatherMap API (real-time weather for user's location)
@@ -89,94 +87,90 @@ Next.js Frontend
 │  Wikipedia REST API  →  botanical description│
 │  Perenual API        →  live care requirements│
 └─────────────────────────────────────────────┘
-```
 
-## The Two Models
+ 
 
-**Model 1 — Neural Network Plant Matcher**
+The Two Models
+
+Model 1 — Neural Network Plant Matcher
 
 A dense regression neural network that scores every plant in the database against the user's exact conditions, incorporating real-time weather data from OpenWeatherMap at inference time.
 
-The network is trained to predict `overall_home_score` from 46 raw plant attributes (hardiness, watering needs, growth habit, safety flags, edibility flags, size, etc.) — deliberately excluding the six engineered composite scores (`beginner_score`, `drought_score`, `climate_score`, `space_score`, `edibility_score`, `safety_score`) that the target is itself a fixed weighted sum of. An earlier version of this model included those six scores as inputs, which let the network shortcut straight to the answer instead of learning anything — R² of 0.9879 in that version was really just proof a neural net can do addition. Removing them cost a small amount of headline accuracy but means the reported metrics now reflect the network actually learning the underlying (non-linear, conditional) relationship between raw plant attributes and home-growing suitability.
+The network is trained to predict overall_home_score from 46 raw plant attributes (hardiness, watering needs, growth habit, safety flags, edibility flags, size, etc.) — deliberately excluding the six engineered composite scores that the target is itself a fixed weighted sum of. An earlier version included those six scores as inputs, which let the network shortcut straight to the answer instead of learning anything — R² of 0.9879 in that version was really just proof a neural net can do addition. Removing them cost a small amount of headline accuracy but means the reported metrics now reflect the network actually learning the underlying relationship between raw plant attributes and home-growing suitability.
 
-```
 Architecture:  46 → 256 → 128 → 64 → 32 → 1
 Layers:        Dense + BatchNorm + Dropout
 Activation:    ReLU (hidden) · Linear (output)
-```
+Metric	Result
+MAE	2.32
+RMSE	2.93
+R²	0.9624
+Error rate	3.3%
 
-| Metric | Result |
-|--------|--------|
-| MAE | 2.32 |
-| RMSE | 2.93 |
-| R² | 0.9624 |
-| Error rate | 3.3% |
-
-**Model 2 — KMeans Botanical Similarity Engine**
+Model 2 — KMeans Botanical Similarity Engine
 
 Clusters 936 plants into 15 botanical groups based on 23 similarity features. Powers two distinct production features:
 
-- **Substitution engine** when a plant won't survive the user's conditions, finds the closest botanical match within the same cluster
-- **Hidden gem detection** identifies plants that the neural network scores highly but that sit outside the user's expected cluster profile, surfacing non-obvious matches that standard advice would never produce
+Substitution engine — when a plant won't survive the user's conditions, finds the closest botanical match within the same cluster
+Hidden gem detection — identifies plants that the neural network scores highly but that sit outside the user's expected cluster profile, surfacing non-obvious matches that standard advice would never produce
 
-## Dataset and Features
+ 
 
-| Property | Value |
-|----------|-------|
-| Total plants | 936 |
-| Features per plant | 69 |
-| Climate clusters | 15 |
-| Plant data source | Perenual API v2 |
-| Weather data | OpenWeatherMap API |
+Dataset and Features
+Property	Value
+Total plants	936
+Features per plant	69
+Climate clusters	15
+Plant data source	Perenual API v2
+Weather data	OpenWeatherMap API
 
-Engineered features include 6 composite scoring functions (beginner, drought, climate, space, edibility, safety, all normalised 0 to 100), 14 user preference tags, Israeli hardiness zone match flag, attention score, overall home score, data quality score, seasonality flags, companion planting data, and real-time weather adjustments covering temperature, rainfall, humidity, and UV index.
+Engineered features include 6 composite scoring functions (beginner, drought, climate, space, edibility, safety — all normalised 0 to 100), 14 user preference tags, Israeli hardiness zone match flag, attention score, overall home score, data quality score, seasonality flags, companion planting data, and real-time weather adjustments covering temperature, rainfall, humidity, and UV index.
 
 User profiles supported: Beginner · Intermediate · Edible focus · Pet owner · Drought focus
 
-## Tech Stack
+ 
 
-| Layer | Technology |
-|-------|-----------|
-| ML Models | TensorFlow / Keras · scikit-learn |
-| Data pipeline | Python · Pandas · NumPy |
-| API | FastAPI · Uvicorn |
-| Weather | OpenWeatherMap API |
-| Frontend | Next.js 16 · TypeScript · Tailwind CSS v4 |
-| Animations | Framer Motion |
-| 3D visualisation | Three.js · React Three Fiber |
-| Icons | lucide-react |
-| Plant data | Perenual API v2 |
-| Plant descriptions | Wikipedia REST API (zero cost) |
+Tech Stack
+Layer	Technology
+ML Models	TensorFlow / Keras · scikit-learn
+Data pipeline	Python · Pandas · NumPy
+API	FastAPI · Uvicorn
+Weather	OpenWeatherMap API
+Frontend	Next.js 16 · TypeScript · Tailwind CSS v4
+Animations	Framer Motion
+Icons	lucide-react
+Plant data	Perenual API v2
+Plant descriptions	Wikipedia REST API (zero cost)
 
-## API Endpoints
+ 
 
-```
+API Endpoints
 POST /recommend          →  Full plant analysis for user conditions
-POST /score-plant/{id}   →  Personalized score for one plant against given conditions
+POST /score-plant/{id}   →  Personalised score for one plant against given conditions
 GET  /plant/{id}         →  Single plant detail
 GET  /similar/{name}     →  Similar plants from same botanical cluster
 GET  /plants             →  Full plant database
 GET  /weather/{city}     →  Current weather data for scoring adjustment
-```
 
+ 
 
-## Frontend — User Journey
+Frontend — User Journey
 
-**Step 1 — Onboarding questionnaire**
+Step 1 — Onboarding questionnaire
 Location, light conditions, available space, experience level, and preferences (edible, pet safe, drought resistant, low maintenance). Under 2 minutes.
 
-**Step 2 — Analysis results**
+Step 2 — Analysis results
 Ranked plant list with neural network compatibility scores and full per-plant breakdown covering climate fit, space score, beginner ease, and safety score, adjusted for the user's real-time local weather.
 
-**Step 3 — Hidden gems**
+Step 3 — Hidden gems
 Plants the anomaly detection layer flagged as unexpectedly high-compatibility, outside the user's typical zone profile, surfaced by comparing neural network scores against KMeans cluster placement.
 
-**Step 4 — Substitutions**
+Step 4 — Substitutions
 When a plant won't survive the user's conditions, the substitution engine presents the closest botanical alternative from the same cluster with a side-by-side compatibility comparison.
 
-## Project Structure
+ 
 
-```
+Project Structure
 Plearn/
 ├── data/
 │   ├── plants_filtered.csv
@@ -201,92 +195,50 @@ Plearn/
 │   └── utils/
 │       └── preprocessing.py
 └── frontend/                       # Next.js 16 app
-```
 
-## Running the Project
+ 
 
-**Backend:**
-```bash
-cd "Plearn - Final Project"
+Running the Project
+
+Backend:
+
+bash
 uvicorn src.api.main:app --reload --port 8000
-```
 
-**Frontend:**
-```bash
+Frontend:
+
+bash
 cd frontend
+npm install
 npm run dev
-```
 
-**API docs available at** `http://localhost:8000/docs`
+API docs: http://localhost:8000/docs
 
-**Environment variables required:**
-```
+Environment variables required:
+
 OPENWEATHERMAP_API_KEY
 PERENUAL_API_KEY
-```
 
-## Planned Features
+See .env.example for the expected format.
 
-**Computer Vision — Plant Identification**
+ 
 
-The next major feature planned for Plearn that i did not have the time to implementb is a CNN-based plant identification system. The idea came from a real gap in the current flow: the system tells you what to grow, but it has no way to help you identify something you've already found, already own, or have growing in your environment.
+Planned Features
 
-The feature would work in two modes: live camera feed directly in the browser, and photo upload for devices where that isn't available. Either way, the image goes to a convolutional neural network that identifies the plant and routes directly into the existing recommendation and care pipeline, returning the plant's full compatibility analysis, score breakdown, and care requirements, exactly as if the user had found it in the ranked results list.
+Computer Vision — Plant Identification
 
-The model architecture would use transfer learning, either MobileNetV2 or EfficientNet, fine-tuned on a plant species dataset. Training entirely from scratch on 936 plant classes is impractical without a large labelled dataset and significant compute, but transfer learning makes this achievable on a reasonable timeline. The trained model would be served through the existing FastAPI backend as an additional inference endpoint.
+The next major feature planned for Plearn is a CNN-based plant identification system. The system currently tells you what to grow — this would add the ability to identify something you've already found or already own.
+
+The feature would work in two modes: live camera feed directly in the browser, and photo upload. Either way, the image goes to a convolutional neural network that identifies the plant and routes directly into the existing recommendation and care pipeline — returning the plant's full compatibility analysis, score breakdown, and care requirements, exactly as if the user had found it in the ranked results list.
+
+The model architecture would use transfer learning (MobileNetV2 or EfficientNet), fine-tuned on a plant species dataset. The trained model would be served through the existing FastAPI backend as an additional inference endpoint.
 
 This would make Plearn genuinely bidirectional: not just "what should I grow" but "what is this thing, and can I grow it here."
 
-&nbsp;
+ 
 
-## What I Learned
+About
 
-This is the most important part, right. Not just what I built, but what I actually learned — from building the system itself and from everything the John Bryce AI Experts program pushed me through to get here. Did the program make me better? Yes it did. It didn't just teach me syntax or how to run a model in a notebook. It pushed me to actually think like an engineer — to understand why things work, not just that they work. And Plearn is where all of that came together.
-Building it end-to-end was one of the most complete engineering experiences I've had and honestly one of the most complicated ones too. It wasn't just about training a model and calling it done. I had to think about every layer of the system: where the data comes from, how it gets cleaned and shaped, what features actually matter for predicting whether a plant survives, how two models can talk to each other, how to wrap all of that in an API that behaves consistently, and then how to surface it through a frontend that a real person can actually use. Every part had its own challenges and every part taught me something different. 
+Plearn is an agricultural AI system that gives home growers in Israel accurate, explainable, local, and live plant intelligence — built on production-grade infrastructure.
 
-*On a personal note I want to say thank you to you, Leon. You not only showed how fun, challenging and exciting Data Science/ML could be not only to myself but to all of us,so thank you.*  
-
-**Data Engineering**
-
-I pulled raw plant data from the Perenual API v2 across 17 filters, handling pagination, deduplication, and merging across multiple API calls to arrive at a clean dataset of 936 unique plant varieties. What I found early on was that the raw API data wasn't enough. It told me what a plant was, its name, its family, basic care notes, but it didn't tell me anything useful for predicting survival in a specific environment. So I had to build that myself. I engineered 69 features per plant from scratch: 6 composite scoring functions covering beginner ease, drought tolerance, climate fit, space requirements, edibility, and safety, all normalised to 0 to 100, plus 14 user preference tags, Israeli hardiness zone matching, attention scores, data quality scores, and seasonality flags. None of that existed in the raw data. I had to think through what a plant actually needs to survive and figure out how to encode that as a number the model could learn from. That process alone taught me more about feature engineering than any exercise I'd done in the course.
-
-**Model Training**
-
-Training the neural network taught me how much the iteration cycle matters. I didn't just run the training once and take the result. I went through baseline evaluation, adjusted the architecture, tuned hyperparameters, added early stopping, and worked through the learning curves until the model was genuinely performing well. There were runs where the validation loss plateaued early and runs where I could see overfitting starting to appear. Learning to read those signals and know what to change was a big part of what made this worthwhile.
-
-One of the most important things I caught, late, was that my first version of this model was cheating without me realising it. The target, `overall_home_score`, is a fixed weighted sum of six other engineered scores, and I had included all six of those scores as input features. The network wasn't learning to predict anything, it was learning to re-add six numbers I'd already handed it, which is why that version hit a suspiciously perfect R² of 0.9879. Once I traced the leak and removed those six scores (and four other flags that turned out to be thresholded versions of the same scores) from the training inputs, the model had to actually learn the underlying relationship between raw plant attributes and home-growing suitability from scratch. It settled at R² of 0.9624 with MAE of 2.32, a small drop in the headline number, but an honest one, and it's the result I'd defend.
-
-**Clustering and Similarity**
-
-The KMeans work was where I started to see how two models can work together rather than in isolation. I used WCSS and silhouette scoring to find the right number of clusters, 15, and once I had that, I could look at the clusters and see that they were genuinely meaningful botanically. Similar plants were grouping together in ways that made real-world sense. That's when I realised I could use the relationship between the neural network scores and the cluster placements to detect something more interesting: plants that scored high on compatibility but sat in unexpected clusters. That tension between the two models became the hidden gem feature, and I think it's one of the most genuinely intelligent things the system does.
-
-**Anomaly Detection**
-
-This was the part I'm most proud of. It wasn't a separate model. It was a layer of thinking built on top of two existing models working together. When the neural network says a plant is a strong match but KMeans says it sits outside the user's expected cluster profile, that's a signal worth surfacing rather than ignoring. I felt like that decision, to look at the disagreement between two models rather than just the output of one, was the moment the system started feeling like real intelligence rather than just a ranking tool. Most systems would just return the top scores. This one asks why a plant scored high when it wasn't expected to, and surfaces that as something valuable.
-
-**Real-Time Weather Integration**
-
-Connecting the OpenWeatherMap API was important to me because it was what made the system feel alive. A static model gives the same answer every day regardless of what's happening outside. Pulling live temperature, rainfall, humidity, and UV index at request time means the analysis reflects what's actually happening in the user's environment right now. A plant that scores 84 on a mild day in March might score quite differently in the middle of a Tel Aviv summer heatwave. That responsiveness is what separates a useful tool from a generic one, and it was the piece that connected the ML work to something that behaves like a real-world system.
-
-**Production API**
-
-Building the FastAPI backend was where I had to think like a software engineer as much as an ML engineer. Model loading on startup, a preprocessing pipeline that mirrors the training pipeline exactly so there's no mismatch between how features were built and how they're used at inference, persona-specific weight vectors for different user profiles, hard filtering logic, and structured Pydantic response schemas. Every decision had a reason behind it. I wanted the API to be something I could actually hand off, extend, or deploy, not just something that worked once on my machine. That mindset of building for reliability rather than just correctness was something I really developed through this project.
-
-**Full Stack Integration**
-
-Connecting all of this to a Next.js 16 frontend felt like closing the loop. The models and the API exist for a reason, to actually help someone. Seeing the full journey from a user answering a few questions about their balcony to the system returning a ranked, explained, weather-adjusted plant list with hidden gems and substitution options was the moment the project felt complete. It's one thing to see good metrics in a notebook. It's another to see a real interface that a person could sit down and use.
-
-&nbsp;
-
-## About
-
-Built as the final project of the John Bryce AI Experts Program — a university-accredited, 440-hour program in Data Science, Machine Learning and Deep Learning, equivalent to a full academic semester. I wanted to build something that solved a real problem, not just a demo that looks good in a notebook. My brother's dead plants were honestly part of the motivation. Plearn is my attempt at something that actually works, an agricultural AI system that gives home growers in Israel accurate, explainable, local, and live plant intelligence built on production-grade infrastructure.
-
-**Gabriel Kaplan** 
-
-
-cd "/Users/gabe/Desktop/John Bryce/Plearn - Final Project/frontend"
-npm run dev
-
-cd "/Users/gabe/Desktop/John Bryce/Plearn - Final Project"
-uvicorn src.api.main:app --reload --port 8000
+Gabriel Kaplan · github.com/Gabriel-Kaplan
