@@ -45,8 +45,6 @@ Locally-generated plant summaries a one-line, grounded summary of each top resul
 Downloadable PDF report a clean, branded one-click export of your ranked results, generated client-side
 
  
-
-System Architecture
 User Input (location, light, space, experience, preferences)
         ↓
 OpenWeatherMap API (real-time weather for user's location)
@@ -87,8 +85,6 @@ Next.js Frontend
 │  Wikipedia REST API  →  botanical description│
 │  Perenual API        →  live care requirements│
 └─────────────────────────────────────────────┘
-
- 
 
 The Two Models
 
