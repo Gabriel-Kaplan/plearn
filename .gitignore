@@ -1,0 +1,14 @@
+.env
+.env.local
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# frontend build artifacts / dependencies (regenerate via npm install / npm run build)
+frontend/node_modules/
+frontend/.next/
+frontend/next-env.d.ts
+
+# jupyter checkpoints
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
