@@ -1194,19 +1194,20 @@ export default function ResultsPage() {
       {/* ── NAV ── */}
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-[1040px]">
         <div className="rounded-[28px] border bg-white/90 backdrop-blur-xl border-black/[0.07]">
-          <div className="h-14 flex items-center justify-between px-5">
+          <div className="h-14 flex items-center justify-between px-3 sm:px-5">
             <Link href="/" className="shrink-0">
               <Image src="/plearnlogo.png" alt="Plearn" width={92} height={20} />
             </Link>
             <div className="flex items-center gap-1">
-              <Link href="/catalog"
-                className="text-[13px] font-medium text-[#4B5563] hover:text-[#111811] hover:bg-black/[0.03] px-3.5 py-2 rounded-full transition-colors">
-                Plant catalog
+              <Link href="/catalog" title="Plant catalog"
+                className="flex items-center gap-1.5 text-[13px] font-medium text-[#4B5563] hover:text-[#111811] hover:bg-black/[0.03] px-2.5 sm:px-3.5 py-2 rounded-full transition-colors whitespace-nowrap">
+                <Leaf size={14} className="shrink-0" />
+                <span className="hidden sm:inline">Plant catalog</span>
               </Link>
-              <button onClick={() => router.push("/analyse")}
-                className="flex items-center gap-1.5 text-[13px] font-medium text-[#4B5563] hover:text-[#111811] hover:bg-black/[0.03] px-3.5 py-2 rounded-full transition-colors">
-                <ArrowLeft size={14} />
-                New analysis
+              <button onClick={() => router.push("/analyse")} title="New analysis"
+                className="flex items-center gap-1.5 text-[13px] font-medium text-[#4B5563] hover:text-[#111811] hover:bg-black/[0.03] px-2.5 sm:px-3.5 py-2 rounded-full transition-colors whitespace-nowrap">
+                <ArrowLeft size={14} className="shrink-0" />
+                <span className="hidden sm:inline">New analysis</span>
               </button>
             </div>
           </div>
@@ -1223,21 +1224,23 @@ export default function ResultsPage() {
 
             {/* Conditions */}
             {condParts.length > 0 && (
-              <div className="flex items-center gap-2 mb-5 pt-8">
+              <div className="flex items-center flex-wrap gap-x-2 gap-y-1.5 mb-5 pt-8">
                 {condParts.map((p, i) => (
-                  <span key={p} className="flex items-center gap-2">
-                    <span className="text-[12px] text-[#6B7280] font-medium capitalize">{p}</span>
+                  <span key={p} className="flex items-center gap-2 shrink-0">
+                    <span className="text-[12px] text-[#6B7280] font-medium capitalize whitespace-nowrap">{p}</span>
                     {i < condParts.length - 1 && <span className="text-[#D1D5DB] text-[10px]">·</span>}
                   </span>
                 ))}
                 <button onClick={openEditConditions}
-                  className="flex items-center gap-1 text-[12px] font-semibold text-[#2D5A3D] hover:text-[#244930] transition-colors ml-1">
+                  className="flex items-center gap-1 text-[12px] font-semibold text-[#2D5A3D] hover:text-[#244930] transition-colors shrink-0 whitespace-nowrap">
                   <Pencil size={11} /> Edit
                 </button>
-                <span className="text-[#D1D5DB] text-[10px]">·</span>
+                <span className="text-[#D1D5DB] text-[10px] shrink-0">·</span>
                 <button onClick={() => setShowLegend(s => !s)}
-                  className="flex items-center gap-1 text-[12px] font-semibold text-[#6B7280] hover:text-[#111811] transition-colors">
-                  <Info size={11} /> What do these mean?
+                  className="flex items-center gap-1 text-[12px] font-semibold text-[#6B7280] hover:text-[#111811] transition-colors shrink-0 whitespace-nowrap">
+                  <Info size={11} />
+                  <span className="hidden sm:inline">What do these mean?</span>
+                  <span className="sm:hidden">Legend</span>
                   <ChevronDown size={12} className="transition-transform" style={{ transform: showLegend ? "rotate(180deg)" : "none" }} />
                 </button>
               </div>
@@ -1406,7 +1409,7 @@ export default function ResultsPage() {
           </motion.div>
 
           {/* ── TABS ── */}
-          <motion.div className="flex items-center gap-1 mb-6 p-1 rounded-xl bg-[#F7F8F5] w-fit"
+          <motion.div className="flex items-center gap-1 mb-6 p-1 rounded-xl bg-[#F7F8F5] max-w-full overflow-x-auto no-scrollbar"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.12 }}>
             {([
@@ -1416,7 +1419,7 @@ export default function ResultsPage() {
               { key: "saved"   as Tab, label: "Saved",          count: applyFilters(favorites, activeFilters).length },
             ]).map(t => (
               <button key={t.key} onClick={() => switchTab(t.key)}
-                className="relative flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold font-[Sora] transition-colors"
+                className="relative flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold font-[Sora] transition-colors shrink-0 whitespace-nowrap"
                 style={{ color: tab === t.key ? "white" : "#6B7280" }}>
                 {tab === t.key && (
                   <motion.div layoutId="tab-bg"
@@ -1469,7 +1472,8 @@ export default function ResultsPage() {
                 className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-full border transition-colors text-[#6B7280] bg-white hover:text-[#111811]"
                 style={{ borderColor: "#E4E7E1" }}>
                 <Download size={13} />
-                Download my analysis
+                <span className="hidden sm:inline">Download my analysis</span>
+                <span className="sm:hidden">Download</span>
               </button>
             </div>
 

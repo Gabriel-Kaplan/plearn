@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,6 +37,7 @@ type PersonalizedScore = {
 };
 
 const FILTER_OPTIONS = ["Indoor suitable", "Pet safe", "Edible", "Low maintenance"];
+const PAGE_SIZE = 100;
 
 function confidenceLabel(std: number): { text: string; color: string } {
   if (std < 5)  return { text: "Consistent score", color: "#2D5A3D" };
@@ -72,6 +73,8 @@ export default function CatalogPage() {
   const [selected, setSelected] = useState<CatalogPlant | null>(null);
   const [conditions, setConditions] = useState<UserConditions | null>(null);
   const [hasResults, setHasResults] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -97,6 +100,31 @@ export default function CatalogPage() {
       .sort((a, b) => b.score - a.score);
   }, [plants, query, activeFilters]);
 
+  // Render only the first page instantly — rendering all ~900 cards at once
+  // is what causes the scroll/typing lag, not the single /api/plants fetch.
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [query, activeFilters]);
+
+  const visiblePlants = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
+  const hasMore = visibleCount < filtered.length;
+
+  useEffect(() => {
+    if (!hasMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount(c => Math.min(c + PAGE_SIZE, filtered.length));
+        }
+      },
+      { rootMargin: "600px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, filtered.length]);
+
   function toggleFilter(tag: string) {
     setActiveFilters(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
   }
@@ -106,13 +134,13 @@ export default function CatalogPage() {
       {/* NAV */}
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-[1040px]">
         <div className="rounded-[28px] border bg-white/90 backdrop-blur-xl border-black/[0.07] shadow-[0_10px_34px_rgba(17,24,17,0.10)]">
-          <div className="h-14 flex items-center justify-between px-5">
+          <div className="h-14 flex items-center justify-between px-3 sm:px-5">
             <Link href="/" className="shrink-0">
               <Image src="/plearnlogo.png" alt="Plearn" width={92} height={20} />
             </Link>
             <Link href={hasResults ? "/results" : "/analyse"}
-              className="flex items-center gap-1.5 text-[13px] font-medium text-[#4B5563] hover:text-[#111811] hover:bg-black/[0.03] px-3.5 py-2 rounded-full transition-colors">
-              <ArrowLeft size={14} />
+              className="flex items-center gap-1.5 text-[13px] font-medium text-[#4B5563] hover:text-[#111811] hover:bg-black/[0.03] px-2.5 sm:px-3.5 py-2 rounded-full transition-colors whitespace-nowrap">
+              <ArrowLeft size={14} className="shrink-0" />
               {hasResults ? "Back to your results" : "Run an analysis"}
             </Link>
           </div>
@@ -180,9 +208,11 @@ export default function CatalogPage() {
           </div>
         ) : (
           <>
-            <p className="text-[12.5px] text-[#9CA3AF] mb-3">{filtered.length} plants</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pb-16">
-              {filtered.map(plant => (
+            <p className="text-[12.5px] text-[#9CA3AF] mb-3">
+              {visiblePlants.length} of {filtered.length} plants
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {visiblePlants.map(plant => (
                 <button key={plant.id} onClick={() => setSelected(plant)}
                   className="flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-colors hover:border-[#2D5A3D]/40 hover:bg-[#F7FAF7]"
                   style={{ borderColor: "#E4E7E1" }}>
@@ -198,6 +228,13 @@ export default function CatalogPage() {
                 </button>
               ))}
             </div>
+
+            {hasMore && (
+              <div ref={sentinelRef} className="flex items-center justify-center py-8">
+                <Loader2 size={18} className="animate-spin text-[#9CA3AF]" />
+              </div>
+            )}
+            <div className="pb-16" />
           </>
         )}
       </div>
