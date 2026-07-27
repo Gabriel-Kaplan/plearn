@@ -245,6 +245,19 @@ class PlantRecommender:
                 'image_url': extract_image_url(row['default_image']),
                 'cluster': int(row['cluster']),
                 'top_factors': self.explain_row(row.name),
+                # Care requirements — collected in the original bulk pull, already
+                # on every row. Serving this from our own data instead of a live
+                # Perenual call means it's instant and never subject to their
+                # subscription-tier gating.
+                'watering': row['watering'],
+                'watering_days': round(float(row['watering_days']), 1),
+                'sunlight': row['sunlight_primary'],
+                'care_level': row['care_level'],
+                'cycle': row['cycle'],
+                'maintenance': row['maintenance'],
+                'growth_rate': row['growth_rate'],
+                'drought_tolerant': bool(row['drought_tolerant']),
+                'indoor': bool(row['indoor']),
             }
 
         results = [build_result(row, 'final_score') for _, row in top.iterrows()]

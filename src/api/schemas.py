@@ -32,6 +32,15 @@ class PlantResult(BaseModel):
     image_url: Optional[str]
     cluster: int
     top_factors: List[FeatureFactor] = []
+    watering: str
+    watering_days: float
+    sunlight: str
+    care_level: str
+    cycle: str
+    maintenance: str
+    growth_rate: str
+    drought_tolerant: bool
+    indoor: bool
 
 class RecommendResponse(BaseModel):
     total_plants_evaluated: int

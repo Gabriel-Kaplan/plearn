@@ -33,6 +33,15 @@ export type BackendPlant = {
   image_url: string | null;
   cluster: number;
   top_factors: BackendFactor[];
+  watering: string;
+  watering_days: number;
+  sunlight: string;
+  care_level: string;
+  cycle: string;
+  maintenance: string;
+  growth_rate: string;
+  drought_tolerant: boolean;
+  indoor: boolean;
 };
 
 const CITY_TO_LOCATION: Record<string, string> = {
@@ -102,6 +111,17 @@ export function toFrontendPlant(plant: BackendPlant, isHiddenGem = false) {
     is_hidden_gem: isHiddenGem,
     image_url: plant.image_url ?? undefined,
     top_factors: plant.top_factors ?? [],
+    care: {
+      watering: plant.watering,
+      watering_days: plant.watering_days,
+      sunlight: plant.sunlight,
+      care_level: plant.care_level,
+      cycle: plant.cycle,
+      maintenance: plant.maintenance,
+      growth_rate: plant.growth_rate,
+      drought_tolerant: plant.drought_tolerant,
+      indoor: plant.indoor,
+    },
     care_summary: [
       `Climate fit: ${score(plant.climate_score)}/100.`,
       `Space fit: ${score(plant.space_score)}/100.`,

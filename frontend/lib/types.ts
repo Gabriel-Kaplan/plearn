@@ -29,6 +29,21 @@ export interface ScoreFactor {
   direction: "positive" | "negative";
 }
 
+// Collected in the original bulk data pull, present for all 936 plants —
+// served directly from our own dataset rather than a live third-party call,
+// so it's instant and never subject to an API provider's subscription tier.
+export interface PlantCare {
+  watering: string;
+  watering_days: number;
+  sunlight: string;
+  care_level: string;
+  cycle: string;
+  maintenance: string;
+  growth_rate: string;
+  drought_tolerant: boolean;
+  indoor: boolean;
+}
+
 export interface Plant {
   id: number;
   name: string;
@@ -41,6 +56,7 @@ export interface Plant {
   is_hidden_gem: boolean;
   image_url?: string;
   care_summary?: string;
+  care: PlantCare;
   top_factors: ScoreFactor[];
 }
 

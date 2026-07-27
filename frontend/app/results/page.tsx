@@ -56,42 +56,13 @@ const listItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.44, ease } },
 };
 
-// ─── Perenual care fetch ─────────────────────────────────────────────────────
+// ─── Care requirements formatting ─────────────────────────────────────────────
+// Served directly from Plant.care (collected in the original bulk pull, present
+// for all 936 plants) rather than a live third-party call — see lib/backend.ts.
 
-type CareData = {
-  watering: string;
-  sunlight: string[];
-  care_level: string | null;
-  cycle: string | null;
-  maintenance: string | null;
-  growth_rate: string | null;
-  drought_tolerant: boolean;
-  indoor: boolean;
-};
-
-const careCache = new Map<string, CareData | null>();
-
-async function fetchPlantCare(name: string): Promise<CareData | null> {
-  const key = name.toLowerCase();
-  if (careCache.has(key)) return careCache.get(key)!;
-  try {
-    const res = await fetch(`/api/plant-care?name=${encodeURIComponent(name)}`);
-    const data = res.ok ? (await res.json() as CareData | null) : null;
-    careCache.set(key, data);
-    return data;
-  } catch {
-    careCache.set(key, null);
-    return null;
-  }
-}
-
-function formatSunlight(sunlight: string[] | string | null | undefined): string {
+function formatSunlight(sunlight: string | null | undefined): string {
   if (!sunlight) return "—";
-  const arr = Array.isArray(sunlight) ? sunlight : [sunlight];
-  if (!arr.length) return "—";
-  return arr
-    .map(s => s.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()))
-    .join(" / ");
+  return sunlight.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 }
 
 // ─── Botanical substitutes fetch ──────────────────────────────────────────────
@@ -526,16 +497,39 @@ function BreakdownPanel({ plant, onClose, isFavorite, onToggleFavorite }: {
 // Its own standalone panel (not buried inside the breakdown) since live care
 // data is one of the things people most need to actually see, not scroll past.
 
+function capitalize(value: string): string {
+  return value ? value[0].toUpperCase() + value.slice(1) : value;
+}
+
+// Categorical care labels only mean something with the standard horticultural
+// definition attached — "Annual" and "Full Sun" are jargon on their own.
+function wateringCaption(days: number | null | undefined): string {
+  if (days == null) return "";
+  const rounded = Math.round(days);
+  return `Every ${rounded} day${rounded === 1 ? "" : "s"}`;
+}
+
+function sunlightCaption(sunlight: string | null | undefined): string {
+  const s = (sunlight ?? "").toLowerCase();
+  if (s.includes("full_sun") || s === "full sun") return "6+ hrs direct sun/day";
+  if (s.includes("part")) return "3–6 hrs direct sun/day";
+  if (s.includes("shade")) return "Under 3 hrs direct sun/day";
+  return "";
+}
+
+function cycleCaption(cycle: string | null | undefined): string {
+  const c = (cycle ?? "").toLowerCase();
+  if (c.includes("biennial")) return "Two-year lifecycle, then flowers and dies";
+  if (c.includes("annual")) return "One growing season, then replant";
+  if (c.includes("perennial")) return "Regrows on its own, year after year";
+  return "";
+}
+
 function CareRequirementsPanel({ plant }: { plant: Plant }) {
   const isGem  = plant.is_hidden_gem;
   const accent = isGem ? "#6B48C8" : "#2D5A3D";
   const tint   = isGem ? "#F5F4FF" : "#EEF7F1";
-
-  const [care, setCare] = useState<CareData | null | "loading">("loading");
-
-  useEffect(() => {
-    fetchPlantCare(plant.name).then(setCare);
-  }, [plant.name]);
+  const care   = plant.care;
 
   return (
     <div className="rounded-2xl border overflow-hidden bg-white shadow-[0_2px_20px_rgba(17,24,17,0.05)]" style={{ borderColor: "#E4E7E1" }}>
@@ -550,21 +544,14 @@ function CareRequirementsPanel({ plant }: { plant: Plant }) {
       </div>
 
       <div className="p-6">
-        {care === "loading" ? (
+        {care ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[0, 1, 2, 3].map(i => (
-              <div key={i} className="h-[84px] rounded-xl bg-[#F7F8F5] animate-pulse" />
-            ))}
-          </div>
-        ) : care ? (
-          <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-3"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35 }}>
             {[
-              { icon: <Droplets size={16} />, label: "Watering",   value: care.watering },
-              { icon: <Sun size={16} />,      label: "Sunlight",   value: formatSunlight(care.sunlight) },
-              { icon: <Leaf size={16} />,     label: "Care level", value: care.care_level ?? "—" },
-              { icon: <RefreshCw size={16} />,label: "Cycle",      value: care.cycle ?? "—" },
-            ].map(({ icon, label, value }) => (
+              { icon: <Droplets size={16} />, label: "Watering",   value: care.watering ? capitalize(care.watering) : "—", caption: wateringCaption(care.watering_days) },
+              { icon: <Sun size={16} />,      label: "Sunlight",   value: formatSunlight(care.sunlight), caption: sunlightCaption(care.sunlight) },
+              { icon: <Leaf size={16} />,     label: "Care level", value: care.care_level || "—", caption: "" },
+              { icon: <RefreshCw size={16} />,label: "Cycle",      value: care.cycle || "—", caption: cycleCaption(care.cycle) },
+            ].map(({ icon, label, value, caption }) => (
               <div key={label} className="rounded-xl px-4 py-4 border min-w-0"
                 style={{ background: "#F7F8F5", borderColor: "#E4E7E1" }}>
                 <div className="flex items-center gap-1.5 mb-2" style={{ color: accent }}>
@@ -572,9 +559,10 @@ function CareRequirementsPanel({ plant }: { plant: Plant }) {
                   <span className="text-[11px] font-bold tracking-[0.08em] uppercase font-[Sora] truncate">{label}</span>
                 </div>
                 <div className="text-[14px] font-semibold text-[#374151] leading-snug">{value}</div>
+                {caption && <div className="text-[11px] text-[#9CA3AF] mt-0.5 leading-snug">{caption}</div>}
               </div>
             ))}
-          </motion.div>
+          </div>
         ) : (
           <p className="text-[13px] text-[#9CA3AF] text-center py-4">Care details unavailable for this plant.</p>
         )}
